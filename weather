@@ -1,0 +1,41 @@
+import requests
+import json
+from datetime import datetime
+
+# OpenWeatherMap API 키
+api_key = "YOUR_API_KEY"
+
+# 현재 위치의 날씨 정보 가져오기
+def get_current_weather(api_key, city):
+    base_url = "http://api.openweathermap.org/data/2.5/weather"
+    params = {
+        'q': city,
+        'appid': api_key,
+        'units': 'metric'  # 온도 단위: 섭씨
+    }
+
+    response = requests.get(base_url, params=params)
+    data = json.loads(response.text)
+
+    return data
+
+# 현재 날씨 출력
+def display_current_weather(weather_data):
+    if weather_data['cod'] == '404':
+        print(f"Error: {weather_data['message']}")
+    else:
+        print(f"Weather in {weather_data['name']}, {weather_data['sys']['country']}:")
+        print(f"Temperature: {weather_data['main']['temp']}°C")
+        print(f"Description: {weather_data['weather'][0]['description']}")
+        print(f"Humidity: {weather_data['main']['humidity']}%")
+        print(f"Wind Speed: {weather_data['wind']['speed']} m/s")
+        print(f"Time of data calculation: {datetime.utcfromtimestamp(weather_data['dt']).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+
+# 사용자로부터 도시 입력 받기
+city_name = input("Enter the city name: ")
+
+# 현재 날씨 정보 가져오기
+weather_data = get_current_weather(api_key, city_name)
+
+# 현재 날씨 출력
+display_current_weather(weather_data)
